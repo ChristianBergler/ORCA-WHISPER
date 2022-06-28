@@ -1,0 +1,62 @@
+{
+    "general": {
+        "description": "",
+        "class_name": "OTHER",
+        "debug": false
+    },
+    "training": {
+        "base_training_directory": "/media/alex/s1/experiments/ORCA-WHISPER/MONK-PARAKEET/OTHER",
+        "use_cuda": true,
+        "learning_rate": 1e-4,
+        "batch_size": 8,
+        "gradient_penalty_lambda": 10,
+        "beta_1": 0.5,
+        "beta_2": 0.9,
+        "iterations": 20000,
+        "d_iterations": 5,
+        "metric_iterations": 10,
+        "checkpointing": {
+            "iterations_per_landmark": 1000,
+            "iterations_per_checkpoint": 10,
+            "checkpoints_to_keep": 10
+        }
+    },
+    "latent_space": {
+        "latent_dimension": 100,
+        "latent_space_generator": "gaussian",
+        "gaussian": {
+            "mean": 0,
+            "std": 1
+        }
+    },
+    "data": {
+        "data_directory": "/media/alex/Datasets/MONK-PARAKEET/monk_call_type_less_noise/other",
+        "sr": 44100,
+        "n_fft": 1024,
+        "hop_length": 44,
+        "clip_below_factor": -10,
+        "log_input": true,
+        "n_time_bins": 256,
+        "debug": false,
+        "frequency_first": true,
+        "frequency_compression": {
+            "active": true,
+            "type": "linear",
+            "sr": 44100,
+            "f_min": 0,
+            "f_max": 10000,
+            "n_freq_bins": 512
+        },
+        "inversion": {
+            "exp_power": 5
+        }
+    },
+    "cache": {
+        "active": true,
+        "cache_directory": "/media/alex/Datasets/MONK-PARAKEET/monk_call_type_less_noise/OTHER",
+        "create_img": true,
+        "target_ext": "pt",
+        "bust_cache": true
+
+    }
+}
