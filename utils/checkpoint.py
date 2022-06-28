@@ -26,13 +26,14 @@ def restore_checkpoint(training_directory, generator, discriminator, device, che
                    os.path.isfile(os.path.join(training_directory, ckp)) and
                    os.path.splitext(os.path.join(training_directory, ckp))[1].lower() == '.ckp']
     best_dict = initialize_best_dict()
+    ckp_number = -1
     if len(checkpoints) != 0:
         checkpoint_numbers = [int(checkpoint.split('-')[1].replace('.ckp', '')) for checkpoint in checkpoints]
         ckp_number = checkpoint_number or max(checkpoint_numbers)
         iteration = ckp_number
         checkpoint = os.path.join(training_directory, 'ckp-{}.ckp'.format(ckp_number))
         checkpoint = torch.load(checkpoint)
-        print('Restoring from checkpoint {}'.format(ckp_number))
+
         generator.load_state_dict(checkpoint['generator_state_dict'])
         discriminator.load_state_dict(checkpoint['discriminator_state_dict'])
         d_losses = checkpoint['d_losses']
@@ -46,9 +47,9 @@ def restore_checkpoint(training_directory, generator, discriminator, device, che
         'iteration': iteration,
         'd_losses': d_losses,
         'g_losses': g_losses,
-        'best': best_dict if best_dict is not None else initialize_best_dict()
+        'best': best_dict
 
-    }
+    }, ckp_number
 
 
 def get_checkpoints(ckp_dir):

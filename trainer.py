@@ -40,8 +40,8 @@ class Trainer:
         self.generator_iterations = training_parameters.iterations
 
         self.generator = OrcaGANGenerator(
-            latent_dimension=latent_space_parameters.dimension).apply(weights_init_xavier).double()
-        self.discriminator = OrcaGANDiscriminator().apply(weights_init_xavier).double()
+            latent_dimension=latent_space_parameters.dimension).apply(weights_init_xavier)
+        self.discriminator = OrcaGANDiscriminator().apply(weights_init_xavier)
 
         self.batch_size = training_parameters.batch_size
         self.latent_dim = latent_space_parameters.dimension
@@ -60,10 +60,14 @@ class Trainer:
             self.device = torch.device("cuda:0")
             self.use_cuda = True
 
-        checkpoint_data = restore_checkpoint(self.checkpoint_dir,
-                                             generator=self.generator,
-                                             discriminator=self.discriminator,
-                                             device=self.device)
+        checkpoint_data, ckp_number = restore_checkpoint(self.checkpoint_dir,
+                                                         generator=self.generator,
+                                                         discriminator=self.discriminator,
+                                                         device=self.device)
+        if ckp_number != -1:
+            self.log.info(f'Restoring from checkpoint {ckp_number}')
+        else:
+            self.log.info(f"No checkpoint found. Starting from scratch")
 
         self.iteration = checkpoint_data['iteration']
         self.g_losses = checkpoint_data['g_losses']
@@ -120,7 +124,8 @@ class Trainer:
         self.metrics["Samples"]["Fake"].update(fake_samples, iteration, "Fake")
         self.metrics["Samples"]["RealAudio"].update(real_samples, iteration, "RealAudio")
         self.metrics["Samples"]["FakeAudio"].update(fake_samples, iteration, "FakeAudio")
-        self.log.info(f"step: {iteration}|Loss Discriminator: {d_loss}|Loss Generator: {g_loss}|Gradient Penalty: {gradient_penalty}|")
+        self.log.info(
+            f"step: {iteration}|Loss Discriminator: {d_loss}|Loss Generator: {g_loss}|Gradient Penalty: {gradient_penalty}|")
 
     def save(self, iteration, final=False):
         if not final:

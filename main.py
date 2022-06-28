@@ -90,8 +90,7 @@ if __name__ == "__main__":
         training_parameters=parameters.training,
         general_parameters=parameters.general,
         latent_space_parameters=parameters.latent_space,
-        metrics=metric_dict,
-        lr_decay_parameters=parameters.training.learning_rate_decay
+        metrics=metric_dict
     )
 
     generator, discriminator = trainer.fit()
