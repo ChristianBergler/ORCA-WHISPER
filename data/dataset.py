@@ -16,7 +16,7 @@ import pandas as pd
 
 from utils.gabor_tools import get_hop_for_time_steps, get_signal_0_padding, get_adjusted_signal_length
 from utils.logging import Logger
-from utils.parameter import DataParameters, CacheParameters
+from utils.parameter import DataParameters, CacheParameters, Parameters
 from utils.constants import *
 
 DefaultSpecDatasetOps = {
@@ -158,12 +158,6 @@ class GaborPreparation(object):
         self.n_freq_bins = data_parameters.frequency_compression.n_freq_bins
         self.freq_first = DefaultSpecDatasetOps["freq_first"]
         self.clip_below_factor = data_parameters.clip_below_factor
-        self.prep = T.GaborSpectrogramPreparation(normalize=True,
-                                                  clip_below_factor=self.clip_below_factor,
-                                                  frequency_bins=self.n_freq_bins,
-                                                  sequence_length=self.sequence_length,
-                                                  log=self.log_input,
-                                                  clip=True)
         self.debug = debug
 
         self.g_spec_transforms = [
@@ -171,7 +165,8 @@ class GaborPreparation(object):
             T.PreEmphasize(DefaultSpecDatasetOps["preemphases"]),
             T.GaborSpectrogram(
                 n_fft=self.n_fft,
-                hop_length=self.hop_length
+                hop_length=self.hop_length,
+                debug=self.debug
             ),
         ]
 
@@ -205,11 +200,11 @@ class GaborPreparation(object):
 
     def __call__(self, file_name):
         tensor = self._load_wav(file_name)
-        display_tensor(tensor, "original", show_tensor=self.debug)
-
         if self.parameters.frequency_compression.active:
-            tensor = self.g_compr_f(tensor.double())
+            tensor = self.g_compr_f(tensor)
             display_tensor(tensor, "frequency_compression", show_tensor=self.debug)
+
+        tensor = self.g_subseq(tensor)
 
         return tensor
 
@@ -308,15 +303,15 @@ class GaborDataset(Dataset):
 
 
 if __name__ == '__main__':
-    test_file = "/media/alex/Datasets/MONK-PARAKEET/monk_call_type_less_noise/contact/contact-contact_4725_2019_2019-11-19-173258_224302_224591.wav"
-    sr = 44100
-    n_fft = 1024
-    hop_length = 44
-    spec_transforms = [
-        lambda fn: T.load_audio_file(fn, sr=sr),
-        T.PreEmphasize(),
-        T.GaborSpectrogram(n_fft, hop_length, debug=True),
-    ]
-    g_spec = T.Compose(spec_transforms)
-    spec = g_spec(test_file)
-    print(spec.shape)
+    parameter_file = "../parameters.json"
+    test_file = "/media/alex/Datasets/orca/call_types/N1/extracted_wav/n1_1_1985_158B_49369950_49546350.wav"
+    parameters = Parameters(parameter_file)
+    prep = GaborPreparation(
+        data_parameters=parameters.data,
+        cache=None,
+        device=torch.device("cpu"),
+        debug=True
+    )
+    prepped = prep(test_file)
+    print("")
+

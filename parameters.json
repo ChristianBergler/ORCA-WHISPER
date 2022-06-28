@@ -33,7 +33,7 @@
         "data_directory": "/media/alex/Datasets/MONK-PARAKEET/monk_call_type_less_noise/other",
         "sr": 44100,
         "n_fft": 1024,
-        "hop_length": 44,
+        "hop_length": 260,
         "clip_below_factor": -10,
         "log_input": true,
         "n_time_bins": 256,

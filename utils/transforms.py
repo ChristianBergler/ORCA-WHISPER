@@ -871,7 +871,6 @@ class GaborSpectrogramPreparation:
         if self.log:
             spectrogram = torch.log(spectrogram)
             display_tensor(spectrogram, title="Logged", show_tensor=self.debug, transpose=False)
-        spectrogram = spectrogram[:, :self.sequence_length]
         if compose_prep:
             spectrogram = spectrogram.T.unsqueeze(0)
         spectrogram = spectrogram / (-self.clip_below_factor / 2) + 1
