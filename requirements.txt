@@ -1,0 +1,11 @@
+torch
+tensorboard
+matplotlib
+numpy
+ltfatpy
+resampy
+scipy
+tqdm
+soundfile
+pandas
+numba

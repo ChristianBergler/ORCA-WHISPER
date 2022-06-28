@@ -5,15 +5,13 @@ import numpy as np
 import torch
 from torch.autograd import Variable, grad
 from torch.optim import Adam
-from torch.optim.lr_scheduler import StepLR
 from torch.utils.data import DataLoader
 from tqdm import tqdm
 
 from utils.logging import Logger
 from utils.noise import NoiseGenerator
-from models.models import OrcaGANGenerator, OrcaGANDiscriminator
-from utils.parameter import LearningRateDecayParameters, TrainingParameters, DataLoadingParameters, \
-    LatentSpaceParameters, GeneralParameters
+from models.orcawhisper import OrcaGANGenerator, OrcaGANDiscriminator
+from utils.parameter import TrainingParameters, LatentSpaceParameters, GeneralParameters
 from utils.checkpoint import restore_checkpoint, save_checkpoint
 from utils.model import weights_init_xavier
 
@@ -30,9 +28,7 @@ class Trainer:
             training_parameters: TrainingParameters,
             general_parameters: GeneralParameters,
             latent_space_parameters: LatentSpaceParameters,
-            data_loading_parameters: DataLoadingParameters,
             metrics=None,
-            lr_decay_parameters: LearningRateDecayParameters = None
 
     ):
         self.checkpoint_dir, self.log_dir, self.summary_dir, self.landmark_dir = directories
@@ -47,7 +43,7 @@ class Trainer:
             latent_dimension=latent_space_parameters.dimension).apply(weights_init_xavier).double()
         self.discriminator = OrcaGANDiscriminator().apply(weights_init_xavier).double()
 
-        self.batch_size = data_loading_parameters.batch_size
+        self.batch_size = training_parameters.batch_size
         self.latent_dim = latent_space_parameters.dimension
         self.gradient_penalty_lambda = training_parameters.gradient_penalty_lambda
         self.metrics = metrics
@@ -79,18 +75,6 @@ class Trainer:
         self.lr = training_parameters.learning_rate
         self.D_opt = Adam(self.discriminator.parameters(), lr=self.lr, betas=(self.beta1, self.beta2))
         self.G_opt = Adam(self.generator.parameters(), lr=self.lr, betas=(self.beta1, self.beta2))
-
-        if lr_decay_parameters.active:
-            self.D_opt_scheduler = StepLR(self.D_opt,
-                                          step_size=lr_decay_parameters.lr_decay_D_step_size * training_parameters.d_iterations,
-                                          gamma=lr_decay_parameters.lr_decay_D_gamma,
-                                          verbose=lr_decay_parameters.lr_decay_verbose)
-            self.G_opt_scheduler = StepLR(self.G_opt,
-                                          step_size=lr_decay_parameters.lr_decay_G_step_size,
-                                          gamma=lr_decay_parameters.lr_decay_G_gamma,
-                                          verbose=lr_decay_parameters.lr_decay_verbose)
-        else:
-            self.D_opt_scheduler, self.G_opt_scheduler = None, None
 
         self.best_dict = checkpoint_data["best"]
         self.log.info(OrderedDict({
@@ -208,8 +192,6 @@ class Trainer:
                         self.best_dict["discriminator"]["loss"] = np.abs(D_loss.item())
 
                     self.D_opt.step()
-                    if self.D_opt_scheduler is not None:
-                        self.D_opt_scheduler.step()
 
                 """
                 Train the Generator
@@ -229,8 +211,6 @@ class Trainer:
                 self.d_losses.append(d_loss)
 
                 self.G_opt.step()
-                if self.G_opt_scheduler is not None:
-                    self.G_opt_scheduler.step()
 
                 iteration = iteration_g
 

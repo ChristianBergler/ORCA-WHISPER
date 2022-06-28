@@ -4,7 +4,7 @@ import torch.nn as nn
 
 class OrcaGANGenerator(nn.Module):
     """
-    Here, the network structures of ORCAGAN is implemented
+    Here, the network structures of ORCA-WHISPER is implemented
     """
     def __init__(self, model_size=256, kernel_size=(12, 3), stride=(2, 2), padding=(5, 1), output_padding=(0, 1),
                  latent_dimension=100, scale=8):
