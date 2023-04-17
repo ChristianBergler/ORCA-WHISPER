@@ -1,17 +1,24 @@
 {
     "general": {
         "description": "",
-        "class_name": "OTHER",
+        "class_name": "N9",
         "debug": false
     },
     "training": {
-        "base_training_directory": "/media/alex/s1/experiments/ORCA-WHISPER/MONK-PARAKEET/OTHER",
+        "base_training_directory": "/media/alex/s1/experiments/BIO-GAN/MONK-PARAKEET/alarm-compressed-high-time-res-dynamic-hop",
         "use_cuda": true,
         "learning_rate": 1e-4,
-        "batch_size": 8,
         "gradient_penalty_lambda": 10,
         "beta_1": 0.5,
         "beta_2": 0.9,
+        "learning_rate_decay": {
+            "active": false,
+            "lr_decay_D_step_size": 10000,
+            "lr_decay_D_gamma": 0.5,
+            "lr_decay_G_step_size": 10000,
+            "lr_decay_G_gamma": 0.5,
+            "lr_decay_verbose": false
+        },
         "iterations": 20000,
         "d_iterations": 5,
         "metric_iterations": 10,
@@ -27,36 +34,93 @@
         "gaussian": {
             "mean": 0,
             "std": 1
+        },
+        "uniform": {
+            "min": -1,
+            "max": 1
+        },
+        "orca": {
+            "model_path": ""
         }
     },
     "data": {
-        "data_directory": "/media/alex/Datasets/MONK-PARAKEET/monk_call_type_less_noise/other",
+        "data_directory": "/media/alex/Datasets/MONK-PARAKEET/monk_call_type_less_noise/alarm",
+        "data_limit": 1000,
         "sr": 44100,
         "n_fft": 1024,
-        "hop_length": 260,
+        "hop_length": "dynamic",
         "clip_below_factor": -10,
         "log_input": true,
         "n_time_bins": 256,
         "debug": false,
         "frequency_first": true,
-        "frequency_compression": {
-            "active": true,
-            "type": "linear",
-            "sr": 44100,
-            "f_min": 0,
-            "f_max": 10000,
-            "n_freq_bins": 512
+        "augmentation": {
+            "probability": 1,
+            "pitch_shift": {
+                "active": true,
+                "from": 1.0,
+                "to": 1.3,
+                "probability": 0
+            },
+            "time_stretch": {
+                "active": true,
+                "from": 0.5,
+                "to": 2,
+                "probability": 0
+            },
+            "noise": {
+                "active": true,
+                "noise_directory": "/media/alex/Datasets/MONK-PARAKEET/monk_call_type_less_noise/mini_noise",
+                "min_snr": 12,
+                "max_snr": 12,
+                "probability": 0
+            },
+            "frequency_compression": {
+                "active": true,
+                "type": "linear",
+                "sr": 44100,
+                "f_min": 0,
+                "f_max": 10000,
+                "n_freq_bins": 512
+            }
         },
         "inversion": {
-            "exp_power": 5
+            "exp_power": 5,
+            "inversion_hop_length": "median",
+            "n_time_bins": 256,
+            "post_processing": {
+                "slice": {
+                    "active": false,
+                    "threshold": 0.002
+                },
+                "time_stretch": {
+                    "active": false,
+                    "from": 0.2,
+                    "to": 0.45
+                },
+                "sampler": {
+                    "active": false,
+                    "sequence_length": 128,
+                    "dim": 1,
+                    "random": true
+                }
+            }
         }
+    },
+    "data_loading": {
+        "batch_size": 8,
+        "shuffle": true
+    },
+    "time_frequency_representation": {
+
     },
     "cache": {
         "active": true,
-        "cache_directory": "/media/alex/Datasets/MONK-PARAKEET/monk_call_type_less_noise/OTHER",
+        "cache_directory": "/media/alex/Datasets/MONK-PARAKEET/monk_call_type_less_noise/alarm",
         "create_img": true,
         "target_ext": "pt",
         "bust_cache": true
 
-    }
+    },
+    "metrics": {}
 }
