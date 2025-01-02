@@ -1,5 +1,25 @@
-# ORCA-WHISPER (An Automatic Killer Whale Sound Type Generation Toolkit Using Deep Learning)
+# ORCA-WHISPER
+ORCA-WHISPER: An Automatic Killer Whale Sound Type Generation Toolkit Using Deep Learning
 
+## General Description
+ORCA-WHISPER presents a deep bioacoustic signal generation framework, using generative
+adversarial learning, trained on low-resource killer whale (Orcinus Orca) call type data. Besides audiovisual inspection, supervised call type classification, and model transferability to other acoustic domains, the auspicious quality of generated fake vocalizations was further demonstrated by visualizing, representing, and enhancing the real-world orca signal data manifold.
+
+## Reference
+If ORCA-WHISPER is used for your own research please cite the following publication: ORCA-WHISPER: An Automatic Killer Whale Sound Type Generation Toolkit Using Deep Learning:
+
+```
+@inproceedings{BerglerWHISPER:2022,
+author={Christian Bergler and Alexander Barnhill and Dominik Perrin and Manuel Schmitt and Andreas Maier and Elmar Nöth},
+title={{ORCA-WHISPER: An Automatic Killer Whale Sound Type Generation Toolkit Using Deep Learning}},
+year=2022,
+booktitle={Proc. Interspeech 2022},
+pages={2413--2417},
+doi={10.21437/Interspeech.2022-846}
+}
+```
+## License
+GNU GENERAL PUBLIC LICENSE, Version 3, 29 June 2007 (GNU GPLv3)
 
 # Installation
 ## LTFAT (Large Time Frequency Analysis Toolbox)
